@@ -322,6 +322,8 @@ void game_start(char** gb, char** db, int height, int width)
                 if(db[yCurrent][xCurrent] == 'F')
                 {
                     db[yCurrent][xCurrent] = '*';
+                    attron(A_NORMAL);
+                    mvwprintw(minefield, yCurrent, xCurrent*2, "*");
                     mines_remaining++;
                 }
                 else if(db[yCurrent][xCurrent] == '*')
@@ -331,6 +333,9 @@ void game_start(char** gb, char** db, int height, int width)
                         continue;
                     }
                     db[yCurrent][xCurrent] = 'F';
+                    attron(FLAG);
+                    mvwprintw(minefield, yCurrent, xCurrent*2, "F");
+                    attroff(FLAG);
                     mines_remaining--;
                 }
                 break;
@@ -421,7 +426,9 @@ void click_tile(WINDOW* win, char** gb, char** db, int y, int x, int height, int
     else
     {
         db[y][x] = gb[y][x];
+        attron(NUMBER);
         mvwprintw(win, y, x*2, "%c", gb[y][x]);
+        attroff(NUMBER);
     }
 }
 
@@ -431,7 +438,10 @@ void recursive_reveal(WINDOW* win, char** gb, char** db, int y, int x, int heigh
     if(db[y][x] == '*' && gb[y][x] != 'M')
     {
         db[y][x] = gb[y][x];
+        if(db[y][x] >= '1' && db[y][x] <= '8')  // if number, change color
+            attron(NUMBER);
         mvwprintw(win, y, x*2, "%c", gb[y][x]);
+        attroff(NUMBER);
     }
     // if empty cell, recursively reveal 8 adjacent cells
     if(gb[y][x] == ' ')
